@@ -3,18 +3,18 @@
 <%- include("partials/head") %>
 <body>
   <%- include("partials/errors") %>
-  <form action="/register" method="post">
+  <form action="/signup" method="post">
     <label for="firstName">First Name</label>
     <input type="text" name="firstName" required>
     <label for="lastName">Last Name</label>
     <input type="text" name="lastName" required>
-    <label for="email">Email</label>
-    <input type="email" name="email" required>
+    <label for="username">Username</label>
+    <input type="text" name="username" required>
     <label for="password">Password</label>
     <input type="password" name="password" required>
     <label for="password-confirm">Confirm Password</label>
     <input type="password" name="password-confirm" required>
-    <button type="submit">Register</button>
+    <button type="submit">Sign Up</button>
   </form>
 </body>
 <%- include("partials/footer") %>

@@ -8,6 +8,8 @@
  */
 const express = require("express");
 const session = require("express-session");
+const { PrismaSessionStore } = require("@quixo3/prisma-session-store");
+const { PrismaClient } = require("@prisma/client");
 const passport = require("passport");
 const LocalStrategy = require("passport-local").Strategy;
 
@@ -30,6 +32,24 @@ app.use(express.static(__dirname + "/public"));
  * -------------- VIEWS SETUP ----------------
  */
 app.set("view engine", "ejs");
+
+/**
+ * -------------- SESSION SETUP ----------------
+ */
+
+app.use(
+  session({
+    secret: process.env.SECRET,
+    resave: false,
+    saveUninitialized: true,
+    cookie: { maxAge: 24 * 60 * 60 * 1000 }, // 30 days
+    store: new PrismaSessionStore(new PrismaClient(), {
+      checkPeriod: 2 * 60 * 1000, //ms
+      dbRecordIdIsSessionId: true,
+      dbRecordIdFunction: undefined,
+    }),
+  }),
+);
 
 /**
  * -------------- ROUTES ----------------

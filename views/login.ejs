@@ -1,0 +1,15 @@
+<!-- login.ejs -->
+
+<%- include("partials/head") %>
+<body>
+  <%- include("partials/errors") %>
+  <form action="/login" method="post">
+    <label for="username">Username</label>
+    <input type="text" name="username" required>
+    <label for="password">Password</label>
+    <input type="password" name="password" required>
+    <button type="submit">Login</button>
+  </form>
+  <p>Don't have an account? Click <a href="/register" style="color: blue">here</a> to register.</p>
+</body>
+<%- include("partials/footer") %>

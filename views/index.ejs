@@ -11,7 +11,13 @@
     <a href="/signup">Sign up</a>
   <% } else { %>
     <h3>Hello, <%= username %></h3>
+    <a href="create-new-folder">Create New Folder</a>
     <!-- show folders -->
+     <ul>
+      <% folders.forEach(folder => { %>
+        <li><%= folder.name %></li>
+      <% });%>
+    </ul>
   <% } %>
 </body>
 <%- include("partials/footer") %>

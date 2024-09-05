@@ -70,6 +70,11 @@ const signUpController = {
           data: {
             username: req.body.username,
             hash: hash,
+            folders: {
+              create: {
+                name: "Default Folder",
+              },
+            },
           },
         });
         console.log("created new user");

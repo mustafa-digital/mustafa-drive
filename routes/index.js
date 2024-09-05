@@ -12,6 +12,6 @@ const indexRouter = require("express").Router();
 /**
  * -------------- GET ROUTES ----------------
  */
-indexRouter.get("/", indexController.getIndex);
+indexRouter.get("/", indexController.get);
 
 module.exports = indexRouter;

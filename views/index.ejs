@@ -4,10 +4,14 @@
 <%- include("partials/head") %>
 <body>
   <h1>Mustafa Drive</h1>
-  <a href="/login">Log in</a>
-  <br>
-  <br>
-  <a href="/signup">Sign up</a>
-  </div>
+  <% if (!isAuth) { %>
+    <a href="/login">Log in</a>
+    <br>
+    <br>
+    <a href="/signup">Sign up</a>
+  <% } else { %>
+    <h3>Hello, <%= username %></h3>
+    <!-- show folders -->
+  <% } %>
 </body>
 <%- include("partials/footer") %>

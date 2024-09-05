@@ -7,6 +7,7 @@ const signUpRouter = require("express").Router();
 /**
  * -------------- POST ROUTES ----------------
  */
+signUpRouter.post("/", signUpController.post);
 
 /**
  * -------------- GET ROUTES ----------------

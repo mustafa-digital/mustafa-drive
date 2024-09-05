@@ -8,10 +8,9 @@
  */
 const express = require("express");
 const session = require("express-session");
-const { PrismaSessionStore } = require("@quixo3/prisma-session-store");
-const { PrismaClient } = require("@prisma/client");
 const passport = require("passport");
-const LocalStrategy = require("passport-local").Strategy;
+const { PrismaSessionStore } = require("@quixo3/prisma-session-store");
+const prisma = require("./config/client");
 
 /**
  * -------------- GENERAL SETUP ----------------
@@ -43,13 +42,40 @@ app.use(
     resave: false,
     saveUninitialized: true,
     cookie: { maxAge: 24 * 60 * 60 * 1000 }, // 30 days
-    store: new PrismaSessionStore(new PrismaClient(), {
+    store: new PrismaSessionStore(prisma, {
       checkPeriod: 2 * 60 * 1000, //ms
       dbRecordIdIsSessionId: true,
       dbRecordIdFunction: undefined,
     }),
   }),
 );
+
+/**
+ * -------------- PASSPORT INIT ----------------
+ */
+require("./config/passport");
+
+app.use(passport.initialize());
+app.use(passport.session());
+
+/**
+ * -------------- MIDDLEWARE ----------------
+ */
+// adds the isAuth property to res.locals for fast authentication
+app.use((req, res, next) => {
+  const isAuth = req.isAuthenticated();
+  res.locals.isAuth = isAuth;
+  next();
+});
+
+app.use((req, res, next) => {
+  if (res.locals.isAuth) {
+    console.log(req.user);
+    res.locals.username = req.user.username;
+    // res.locals.folders = req.user.folders;
+  }
+  next();
+});
 
 /**
  * -------------- ROUTES ----------------

@@ -2,7 +2,7 @@
  * -------------- INDEXCONTROLLER ----------------
  */
 const indexController = {
-  getIndex: (req, res, next) => {
+  get: (req, res, next) => {
     res.render("index", {
       title: "Mustafa Drive",
     });

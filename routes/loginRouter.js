@@ -7,6 +7,7 @@ const loginRouter = require("express").Router();
 /**
  * -------------- POST ROUTES ----------------
  */
+loginRouter.post("/", loginController.post);
 
 /**
  * -------------- GET ROUTES ----------------

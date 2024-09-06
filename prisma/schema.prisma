@@ -28,9 +28,10 @@ model Folder {
 
 model File {
   id String @id @default(uuid())
-  name String @db.VarChar(260)
+  name String @db.VarChar(300)
+  originalname String @db.VarChar(260)
   size Int
-  uploadTime Int
+  uploadTime Int?
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())
   folder Folder @relation(fields: [folderId], references: [id])

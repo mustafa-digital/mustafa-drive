@@ -3,7 +3,6 @@
  */
 const prisma = require("../config/client");
 const multer = require("multer");
-const upload = multer({ dest: "tmp/" });
 const fs = require("fs-extra");
 const { body, validationResult } = require("express-validator");
 
@@ -14,6 +13,26 @@ const folderValidation = [
     .isLength({ max: MAX_FOLDERNAME_LENGTH })
     .withMessage("Folder Name must be less than 50 characters long."),
 ];
+
+/**
+ * -------------- multer diskStorage ----------------
+ */
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, "tmp/");
+  },
+  filename: function (req, file, cb) {
+    const fileExtension =
+      file.originalname.substring(
+        file.originalname.lastIndexOf("."),
+        file.originalname.length,
+      ) || "";
+    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+    cb(null, file.fieldname + "-" + uniqueSuffix + fileExtension);
+  },
+});
+
+const upload = multer({ storage: storage });
 
 const getCurrentFolder = (req, res, next) => {
   const folderId = req.params.folderId;
@@ -35,11 +54,12 @@ const folderController = {
     async (req, res, next) => {
       const folderId = req.params.folderId;
       try {
-        await prisma.file.findMany({
+        const files = await prisma.file.findMany({
           where: { folderId: folderId },
         });
         res.render("folder", {
           title: `${res.locals.currentFolder.name} - Mustafa Drive`,
+          files: files,
         });
       } catch (err) {
         res.status(500);
@@ -117,6 +137,15 @@ const folderController = {
         `tmp/${req.file.filename}`,
         `uploads/${req.user.id}/${req.params.folderId}/${req.file.filename}`,
       );
+      console.log(req.file);
+      await prisma.file.create({
+        data: {
+          name: req.file.filename,
+          originalname: req.file.originalname,
+          size: req.file.size,
+          folderId: req.params.folderId,
+        },
+      });
 
       // redirect user back to original folder
       res.redirect(`/folder/${req.params.folderId}`);

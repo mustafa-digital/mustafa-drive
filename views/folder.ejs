@@ -18,6 +18,11 @@
     <input type="file" name="file">
     <button type="submit">Upload</button>
   </form>
-
+  <h3>Files</h3>
+  <ul>
+    <% files.forEach(file => { %>
+      <li><%= file.originalname %></li>
+    <% }); %>
+  </ul>
 </body>
 <%- include("partials/footer") %>

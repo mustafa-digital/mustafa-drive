@@ -2,6 +2,9 @@
  * -------------- folderController ----------------
  */
 const prisma = require("../config/client");
+const multer = require("multer");
+const upload = multer({ dest: "tmp/" });
+const fs = require("fs-extra");
 const { body, validationResult } = require("express-validator");
 
 const MAX_FOLDERNAME_LENGTH = 50;
@@ -36,7 +39,7 @@ const folderController = {
           where: { folderId: folderId },
         });
         res.render("folder", {
-          title: `Mustafa Drive - ${res.locals.currentFolder.name}`,
+          title: `${res.locals.currentFolder.name} - Mustafa Drive`,
         });
       } catch (err) {
         res.status(500);
@@ -59,6 +62,7 @@ const folderController = {
   },
   postUpdate: [
     folderValidation,
+    getCurrentFolder,
     async (req, res, next) => {
       // get validation errors, if there are any
       const errors = validationResult(req);
@@ -69,7 +73,7 @@ const folderController = {
         return res
           .status(400)
           .render(`/folder/:${req.params.folderId}/update`, {
-            title: "Mustafa Drive - Update Folder",
+            title: `${res.locals.folderName} - Mustafa Drive`,
             action: "update",
             postAction: `/folder/:${req.params.folderId}/update`,
             errors: errors.array(),
@@ -98,10 +102,24 @@ const folderController = {
     getCurrentFolder,
     (req, res, next) => {
       res.render("folderForm", {
-        title: "Mustafa Drive - Update Folder",
+        title: `${res.locals.folderName} - Mustafa Drive`,
         action: "update",
         postAction: `/folder/${req.params.folderId}/update`,
       });
+    },
+  ],
+  postFile: [
+    getCurrentFolder,
+    upload.single("file"),
+    async (req, res, next) => {
+      // move the file from tmp folder to the user folder
+      fs.move(
+        `tmp/${req.file.filename}`,
+        `uploads/${req.user.id}/${req.params.folderId}/${req.file.filename}`,
+      );
+
+      // redirect user back to original folder
+      res.redirect(`/folder/${req.params.folderId}`);
     },
   ],
 };

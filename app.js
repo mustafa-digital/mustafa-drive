@@ -70,7 +70,7 @@ app.use((req, res, next) => {
 
 app.use(async (req, res, next) => {
   if (res.locals.isAuth) {
-    console.log(req.user);
+    // console.log(req.user);
     res.locals.username = req.user.username;
     const folders = await prisma.folder.findMany({
       where: { accountId: req.user.id },
@@ -80,7 +80,7 @@ app.use(async (req, res, next) => {
     });
     if (folders.length) res.locals.folders = folders;
   }
-  console.log(res.locals.folders);
+  // console.log(res.locals.folders);
   next();
 });
 

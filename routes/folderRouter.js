@@ -9,6 +9,7 @@ const folderRouter = require("express").Router();
  */
 folderRouter.post("/:folderId/delete", folderController.postDelete);
 folderRouter.post("/:folderId/update", folderController.postUpdate);
+folderRouter.post("/:folderId/uploadFile", folderController.postFile);
 
 /**
  * -------------- GET ROUTES ----------------

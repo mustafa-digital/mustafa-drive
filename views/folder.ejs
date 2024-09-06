@@ -1,0 +1,17 @@
+<!-- folder.ejs -->
+
+<%- include("partials/head") %>
+<body>
+  <%- include("partials/header") %>
+  <h1><%= currentFolder.name %></h1>
+  <!-- <a href="/update-folder/<%= currentFolder.id %>/update">Update Folder</a> -->
+  <form action="/folder/<%= currentFolder.id %>/update" method="get" style="display:inline;">
+    <button type="submit">Update Folder</button>
+  </form>
+  <form action="/folder/<%= currentFolder.id %>/delete" method="post" style="display:inline;">
+    <button type="submit" onclick="return confirm('Are you sure you want to delete this item?')">Delete Folder</button>
+  </form>
+  <h3>Your files</h3>
+
+</body>
+<%- include("partials/footer") %>

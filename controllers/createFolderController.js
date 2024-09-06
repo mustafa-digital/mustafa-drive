@@ -17,8 +17,11 @@ const createFolderController = {
     if (!res.locals.isAuth) {
       res.redirect("/");
     }
-    res.render("createNewFolder", {
+    res.render("folderForm", {
       title: "Mustafa Drive - Create New Folder",
+      action: "create",
+      postAction: "/create-new-folder",
+      errors: [],
     });
   },
   post: [
@@ -32,6 +35,8 @@ const createFolderController = {
         // re-render the registration page with errors showing
         return res.status(400).render("signup", {
           title: "Mustafa Drive - Create New Folder",
+          action: "create",
+          postAction: "/create-new-folder",
           errors: errors.array(),
         });
       }

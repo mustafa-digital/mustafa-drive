@@ -68,12 +68,19 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use((req, res, next) => {
+app.use(async (req, res, next) => {
   if (res.locals.isAuth) {
     console.log(req.user);
     res.locals.username = req.user.username;
-    // res.locals.folders = req.user.folders;
+    const folders = await prisma.folder.findMany({
+      where: { accountId: req.user.id },
+      orderBy: {
+        createdAt: "asc",
+      },
+    });
+    if (folders.length) res.locals.folders = folders;
   }
+  console.log(res.locals.folders);
   next();
 });
 

@@ -11,11 +11,11 @@
     <a href="/signup">Sign up</a>
   <% } else { %>
     <h3>Hello, <%= username %></h3>
-    <a href="create-new-folder">Create New Folder</a>
+    <a href="/create-new-folder">Create New Folder</a>
     <!-- show folders -->
      <ul>
       <% folders.forEach(folder => { %>
-        <li><%= folder.name %></li>
+        <li><a href="/folder/<%= folder.id %>"><%= folder.name %></a></li>
       <% });%>
     </ul>
   <% } %>

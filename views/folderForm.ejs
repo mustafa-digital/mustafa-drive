@@ -1,0 +1,13 @@
+<!-- createNewFolder.ejs -->
+
+<%- include("partials/head") %>
+<body>
+  <%- include("partials/header") %>
+  <%- include("partials/errors") %>
+  <form action="<%= postAction %>" method="post">
+    <label for="folderName">Folder Name</label>
+    <input type="text" name="folderName" value="<%= action === "update" ? currentFolder.name : "" %>" required>
+    <button type="submit"><%= action === "update" ? "Update" : "Create"%></button>
+  </form>
+</body>
+<%- include("partials/footer") %>

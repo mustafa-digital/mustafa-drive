@@ -11,6 +11,7 @@ const session = require("express-session");
 const passport = require("passport");
 const { PrismaSessionStore } = require("@quixo3/prisma-session-store");
 const prisma = require("./config/client");
+require("./config/cloudinary");
 
 /**
  * -------------- GENERAL SETUP ----------------
@@ -89,6 +90,16 @@ app.use(async (req, res, next) => {
  * Assign all the routes from routes.js to app
  */
 require("./routes/routes")(app);
+
+app.use((err, req, res, next) => {
+  if (res.headersSent) {
+    return next(err);
+  }
+  res.status(500);
+  res.render("error", {
+    error: err,
+  });
+});
 
 /**
  * -------------- SERVER ----------------

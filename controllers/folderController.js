@@ -5,6 +5,8 @@ const prisma = require("../config/client");
 const multer = require("multer");
 const fs = require("fs-extra");
 const { body, validationResult } = require("express-validator");
+const { uploadFile } = require("../lib/cloudinaryUtils");
+const cloudinary = require("cloudinary").v2;
 
 const MAX_FOLDERNAME_LENGTH = 50;
 const folderValidation = [
@@ -138,6 +140,8 @@ const folderController = {
         `uploads/${req.user.id}/${req.params.folderId}/${req.file.filename}`,
       );
       console.log(req.file);
+
+      // insert a file record in the database
       await prisma.file.create({
         data: {
           name: req.file.filename,
@@ -146,7 +150,21 @@ const folderController = {
           folderId: req.params.folderId,
         },
       });
-
+      /* 
+        upload the file to cloudinary storage
+      */
+      const filePath = `uploads/${req.user.id}/${req.params.folderId}/${req.file.filename}`;
+      cloudinary.uploader
+        .upload(filePath, {
+          folder: `dev-storage/${req.user.id}/${req.params.folderId}`,
+          resource_type: "auto",
+        })
+        .then((res) => {
+          console.log(res);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
       // redirect user back to original folder
       res.redirect(`/folder/${req.params.folderId}`);
     },

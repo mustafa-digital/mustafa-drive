@@ -4,13 +4,11 @@
 const prisma = require("../config/client");
 const { body, validationResult } = require("express-validator");
 const { genPasswordHash } = require("../lib/passwordUtils");
-const MIN_NAME_LENGTH = 3;
-const MAX_NAME_LENGTH = 20;
+
+// constants for validation
 const MIN_USERNAME_LENGTH = 3;
 const MAX_USERNAME_LENGTH = 30;
 const MIN_PASSWORD_LENGTH = 6;
-const alphaErr = "must only contain letters.";
-const lengthErrName = `must be between ${MIN_NAME_LENGTH} and ${MAX_NAME_LENGTH} characters.`;
 const lengthErrUsername = `must be between ${MIN_USERNAME_LENGTH} and ${MAX_USERNAME_LENGTH} characters.`;
 const lengthErrPassword = `Password must contain atleast ${MIN_PASSWORD_LENGTH} characters.`;
 
@@ -44,11 +42,18 @@ const accountValidation = [
 ];
 
 const signUpController = {
+  /**
+   * -------------- get /signup ----------------
+   */
   get: async (req, res, next) => {
     res.render("signup", {
       title: "Mustafa-Drive Sign Up Page",
     });
   },
+
+  /**
+   * -------------- post /signup ----------------
+   */
   post: [
     accountValidation,
     async (req, res, next) => {
@@ -80,6 +85,7 @@ const signUpController = {
         console.log("created new user");
       } catch (err) {
         res.status(500);
+        next(err);
       }
 
       res.redirect("/");

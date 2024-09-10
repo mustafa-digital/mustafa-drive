@@ -5,6 +5,12 @@ const folderController = require("../controllers/folderController");
 const folderRouter = require("express").Router();
 
 /**
+ * -------------- MIDDLEWARE ----------------
+ */
+const { unauthorizedRedirect } = require("./middleware/authMiddleware");
+folderRouter.use(unauthorizedRedirect);
+
+/**
  * -------------- POST ROUTES ----------------
  */
 folderRouter.post("/:folderId/delete", folderController.postDelete);

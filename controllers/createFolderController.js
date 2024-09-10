@@ -33,8 +33,8 @@ const createFolderController = {
       // if errors, re-render the create form with error messages
       if (!errors.isEmpty()) {
         // re-render the registration page with errors showing
-        return res.status(400).render("signup", {
-          title: "Mustafa Drive - Create New Folder",
+        return res.status(400).render("folderForm", {
+          title: "Create New Folder - Mustafa Drive",
           action: "create",
           postAction: "/create-new-folder",
           errors: errors.array(),

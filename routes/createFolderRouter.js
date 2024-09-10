@@ -3,6 +3,13 @@
  */
 const createFolderController = require("../controllers/createFolderController");
 const createFolderRouter = require("express").Router();
+
+/**
+ * -------------- MIDDLEWARE ----------------
+ */
+const { unauthorizedRedirect } = require("./middleware/authMiddleware");
+createFolderRouter.use(unauthorizedRedirect);
+
 /**
  * -------------- POST ROUTES ----------------
  */

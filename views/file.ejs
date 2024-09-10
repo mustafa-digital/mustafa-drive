@@ -2,6 +2,12 @@
 
 <%- include("partials/head") %>
 <body>
-  <h1>Your file</h1>
+  <%- include("partials/header") %>
+  <h3><a href="/folder/<%= currentFolder.id %>">Back to <%= currentFolder.name %></a></h3>
+  <h1><%= file.originalname %></h1>
+  <h2>Size: <%= (file.size / 1000).toFixed(2) %> kb</h2>
+  <h2>Created at: <%= file.createdAt %> </h2>
+  <h2>Last updated: <%= file.updatedAt  %></h2>
+  <h2><a href="/file/<%=file.id %>/download">Download file</a></h2>
 </body>
 <%- include("partials/footer") %>

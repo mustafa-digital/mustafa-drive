@@ -34,6 +34,7 @@ model File {
   uploadTime Int?
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())
+  assetId String @db.VarChar(32)
   folder Folder @relation(fields: [folderId], references: [id])
   folderId String
 }

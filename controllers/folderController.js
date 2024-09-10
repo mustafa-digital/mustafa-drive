@@ -243,21 +243,6 @@ const folderController = {
       );
       console.log(req.file);
 
-      // insert a file record in the database
-      try {
-        await prisma.file.create({
-          data: {
-            name: req.file.filename,
-            originalname: req.file.originalname,
-            size: req.file.size,
-            folderId: req.params.folderId,
-          },
-        });
-      } catch (err) {
-        res.status(500);
-        next(err);
-      }
-
       // upload the file to cloudinary storage
       const filePath = `uploads/${req.user.id}/${req.params.folderId}/${req.file.filename}`;
       cloudinary.uploader
@@ -265,11 +250,27 @@ const folderController = {
           folder: `dev-storage/${req.user.id}/${req.params.folderId}`,
           resource_type: "auto",
         })
-        .then((res) => {
+        .then(async (res) => {
           console.log(res);
+          // insert a file record in the database
+          try {
+            await prisma.file.create({
+              data: {
+                name: req.file.filename,
+                originalname: req.file.originalname,
+                size: req.file.size,
+                assetId: res.asset_id,
+                folderId: req.params.folderId,
+              },
+            });
+          } catch (err) {
+            throw new Error(err);
+          }
         })
         .catch((err) => {
-          console.log(err);
+          res.status(500).render("error", {
+            error: err,
+          });
         });
 
       // redirect user back to original folder

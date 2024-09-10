@@ -58,6 +58,8 @@ const fileController = {
       });
     },
   ],
+
+  downloadFile: async (req, res, next) => {},
 };
 
 module.exports = fileController;

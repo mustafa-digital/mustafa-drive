@@ -13,6 +13,7 @@ fileRouter.use(unauthorizedRedirect);
 /**
  * -------------- POST ROUTES ----------------
  */
+fileRouter.post("/:fileId/download", fileController.downloadFile);
 
 /**
  * -------------- GET ROUTES ----------------

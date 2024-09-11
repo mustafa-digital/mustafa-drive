@@ -252,6 +252,7 @@ const folderController = {
                 originalname: req.file.originalname,
                 size: req.file.size,
                 assetId: result.asset_id,
+                publicId: result.public_id,
                 folderId: req.params.folderId,
               },
             });

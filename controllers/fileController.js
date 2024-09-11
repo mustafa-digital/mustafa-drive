@@ -103,8 +103,8 @@ const fileController = {
         });
 
         // delete asset from cloudinary based on assetId
-        cloudinary.api
-          .delete_resources([res.locals.file.assetId])
+        cloudinary.uploader
+          .destroy([res.locals.file.publicId])
           .then((result, err) => {
             if (err) {
               console.log(err);

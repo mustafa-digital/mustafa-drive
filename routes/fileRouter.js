@@ -19,5 +19,6 @@ fileRouter.post("/:fileId/download", fileController.downloadFile);
  * -------------- GET ROUTES ----------------
  */
 fileRouter.get("/:fileId", fileController.get);
+fileRouter.get("/:fileId/download", fileController.downloadFile);
 
 module.exports = fileRouter;

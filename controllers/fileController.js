@@ -2,6 +2,10 @@
  * -------------- fileController ----------------
  */
 const prisma = require("../config/client");
+const cloudinary = require("cloudinary").v2;
+const fs = require("fs");
+const { Readable } = require("stream");
+const { finished } = require("stream/promises");
 
 /**
  * -------------- MIDDLEWARE ----------------
@@ -52,6 +56,14 @@ const fileController = {
     getFileDetails,
     getCurrentFolder,
     async (req, res, next) => {
+      // cloudinary.api
+      //   .resources_by_asset_ids(
+      //     [res.locals.file.assetId],
+      //     function (error, result) {
+      //       console.log(result, error);
+      //     },
+      //   )
+      //   .then((result) => console.log(result));
       res.render("file", {
         title: "File - ",
         file: res.locals.file,
@@ -59,7 +71,33 @@ const fileController = {
     },
   ],
 
-  downloadFile: async (req, res, next) => {},
+  downloadFile: [
+    getFileDetails,
+    async (req, res, next) => {
+      cloudinary.api
+        .resources_by_asset_ids([res.locals.file.assetId])
+        .then(async (result) => {
+          const resourceURL = result.resources[0].secure_url;
+
+          const stream = fs.createWriteStream(
+            `tmp/${res.locals.file.originalname}`,
+          );
+          const { body } = await fetch(resourceURL);
+          await finished(Readable.fromWeb(body).pipe(stream));
+
+          res.download(`tmp/${res.locals.file.originalname}`, (err) => {
+            if (err) {
+              throw new Error(err);
+            } else {
+              console.log(`downloaded file ${res.locals.file.originalname}`);
+              fs.unlink(`tmp/${res.locals.file.originalname}`, (err) => {
+                console.log(err);
+              });
+            }
+          });
+        });
+    },
+  ],
 };
 
 module.exports = fileController;

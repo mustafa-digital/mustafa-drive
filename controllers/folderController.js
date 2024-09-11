@@ -147,6 +147,7 @@ const folderController = {
   get: [
     middlewareChain.get,
     async (req, res, next) => {
+      console.log("get folder");
       const folderId = req.params.folderId;
       res.render("folder", {
         title: `${res.locals.currentFolder.name} - Mustafa Drive`,
@@ -237,11 +238,11 @@ const folderController = {
     middlewareChain.postFile,
     async (req, res, next) => {
       // move the file from tmp folder to the user folder
-      fs.move(
+      fs.moveSync(
         `tmp/${req.file.filename}`,
         `uploads/${req.user.id}/${req.params.folderId}/${req.file.filename}`,
       );
-      console.log(req.file);
+      // console.log(req.file);
 
       // upload the file to cloudinary storage
       const filePath = `uploads/${req.user.id}/${req.params.folderId}/${req.file.filename}`;
@@ -250,8 +251,8 @@ const folderController = {
           folder: `dev-storage/${req.user.id}/${req.params.folderId}`,
           resource_type: "auto",
         })
-        .then(async (res) => {
-          console.log(res);
+        .then(async (result) => {
+          console.log(result);
           // insert a file record in the database
           try {
             await prisma.file.create({
@@ -259,22 +260,20 @@ const folderController = {
                 name: req.file.filename,
                 originalname: req.file.originalname,
                 size: req.file.size,
-                assetId: res.asset_id,
+                assetId: result.asset_id,
                 folderId: req.params.folderId,
               },
             });
+            // redirect user back to original folder
+            res.redirect(`/folder/${req.params.folderId}`);
           } catch (err) {
             throw new Error(err);
           }
         })
-        .catch((err) => {
-          res.status(500).render("error", {
-            error: err,
-          });
+        .catch((clouderr) => {
+          console.log({ clouderr });
+          next(clouderr);
         });
-
-      // redirect user back to original folder
-      res.redirect(`/folder/${req.params.folderId}`);
     },
   ],
 };

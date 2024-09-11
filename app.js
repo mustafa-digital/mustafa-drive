@@ -16,8 +16,6 @@ require("./config/cloudinary");
 /**
  * -------------- GENERAL SETUP ----------------
  */
-// Create the connection to postgres database session
-// const pgSession = require("connect-pg-simple")(session);
 
 // Create the Express application
 const app = express();

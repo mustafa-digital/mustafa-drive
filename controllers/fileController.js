@@ -56,14 +56,6 @@ const fileController = {
     getFileDetails,
     getCurrentFolder,
     async (req, res, next) => {
-      // cloudinary.api
-      //   .resources_by_asset_ids(
-      //     [res.locals.file.assetId],
-      //     function (error, result) {
-      //       console.log(result, error);
-      //     },
-      //   )
-      //   .then((result) => console.log(result));
       res.render("file", {
         title: "File - ",
         file: res.locals.file,
@@ -96,6 +88,36 @@ const fileController = {
             }
           });
         });
+    },
+  ],
+  deleteFile: [
+    getFileDetails,
+    getCurrentFolder,
+    async (req, res, next) => {
+      try {
+        // delete file record from db
+        await prisma.file.delete({
+          where: {
+            id: req.params.fileId,
+          },
+        });
+
+        // delete asset from cloudinary based on assetId
+        cloudinary.api
+          .delete_resources([res.locals.file.assetId])
+          .then((result, err) => {
+            if (err) {
+              console.log(err);
+            } else {
+              console.log(result);
+            }
+          });
+
+        console.log(`Deleted file ${req.params.fileId}`);
+        res.redirect(`/folder/${res.locals.currentFolder.id}`);
+      } catch (err) {
+        console.log(err);
+      }
     },
   ],
 };

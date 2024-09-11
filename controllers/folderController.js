@@ -147,8 +147,6 @@ const folderController = {
   get: [
     middlewareChain.get,
     async (req, res, next) => {
-      console.log("get folder");
-      const folderId = req.params.folderId;
       res.render("folder", {
         title: `${res.locals.currentFolder.name} - Mustafa Drive`,
         files: res.locals.currentFolder.files,
@@ -237,15 +235,8 @@ const folderController = {
   postFile: [
     middlewareChain.postFile,
     async (req, res, next) => {
-      // move the file from tmp folder to the user folder
-      fs.moveSync(
-        `tmp/${req.file.filename}`,
-        `uploads/${req.user.id}/${req.params.folderId}/${req.file.filename}`,
-      );
-      // console.log(req.file);
-
       // upload the file to cloudinary storage
-      const filePath = `uploads/${req.user.id}/${req.params.folderId}/${req.file.filename}`;
+      const filePath = `tmp/${req.file.filename}`;
       cloudinary.uploader
         .upload(filePath, {
           folder: `dev-storage/${req.user.id}/${req.params.folderId}`,
@@ -264,6 +255,12 @@ const folderController = {
                 folderId: req.params.folderId,
               },
             });
+
+            // delete the file in tmp
+            fs.unlink(`tmp/${req.file.filename}`, (err) => {
+              console.log(err);
+            });
+
             // redirect user back to original folder
             res.redirect(`/folder/${req.params.folderId}`);
           } catch (err) {

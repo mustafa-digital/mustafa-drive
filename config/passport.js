@@ -29,23 +29,6 @@ passport.use(
     } else {
       return done(null, false);
     }
-
-    // Pool.query(`SELECT * FROM Account WHERE email = ($1)`, [email])
-    //   .then(async (res) => {
-    //     const account = res.rows[0];
-    //     console.log({ account });
-    //     if (!account) {
-    //       return done(null, false);
-    //     }
-    //     // TODO
-    //     // query the Account table in db to find the username and password
-    //     const isValid = await validatePassword(password, account.hash);
-    //     if (isValid) {
-    //       return done(null, account);
-    //     } else {
-    //       return done(null, false);
-    //     }
-    //   })
   }),
 );
 
@@ -60,10 +43,6 @@ passport.deserializeUser(async (id, done) => {
         id: id,
       },
     });
-    // const { rows } = await Pool.query("SELECT * FROM Account WHERE id = $1", [
-    //   id,
-    // ]);
-    // const user = rows[0];
 
     done(null, user);
   } catch (err) {

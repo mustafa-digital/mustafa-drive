@@ -23,7 +23,7 @@
   <!-- upload file form -->
   <form id="file-upload-form" action="/folder/<%= currentFolder.id %>/uploadfile" method="post" enctype="multipart/form-data" onsubmit="fileFormValidation(event)">
     <label for="file">Upload File</label>
-    <input type="file" name="file" accept="image/*, video/*, application/*, text/*, audio/*" onchange="fileInputValidation(event)">
+    <input type="file" name="file" accept="image/*, video/*, application/*, text/*, audio/*, .odt, .csv" onchange="fileInputValidation(event)">
     <button type="submit">Upload</button>
   </form>
 

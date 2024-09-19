@@ -228,8 +228,9 @@ const folderController = {
           ? `mustafa-drive/${req.user.id}/${req.params.folderId}`
           : `dev-storage/${req.user.id}/${req.params.folderId}`;
 
+      // use cloudinary sdk to create an upload stream of the file
       let cld_upload_stream = cloudinary.uploader.upload_stream(
-        { folder: folderPath },
+        { folder: folderPath, resource_type: "auto" },
         async (cloudError, result) => {
           console.log(cloudError, result);
 
@@ -237,6 +238,7 @@ const folderController = {
             throw new Error(cloudError);
           }
 
+          // update the database
           try {
             await prisma.file.create({
               data: {

@@ -3,41 +3,28 @@
  */
 const prisma = require("../config/client");
 const multer = require("multer");
-const fs = require("fs-extra");
 const { body, check, validationResult } = require("express-validator");
 const cloudinary = require("cloudinary").v2;
+const environment = process.env.NODE_ENV;
+let streamifier = require("streamifier");
 
 /**
  * -------------- MIDDLEWARE ----------------
  */
 
 /**
- * -------------- multer diskStorage ----------------
- * This uses multer to upload a file to the tmp/ folder on the local disk
+ * -------------- multer ----------------
+ * This uses multer to upload a file and save it in the app's memory as a buffer
+ * the buffer is then uploaded to cloudinary storage
  */
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, "tmp/");
-  },
-  filename: function (req, file, cb) {
-    const fileExtension =
-      file.originalname.substring(
-        file.originalname.lastIndexOf("."),
-        file.originalname.length,
-      ) || "";
-    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
-    cb(null, file.fieldname + "-" + uniqueSuffix + fileExtension);
-  },
-});
+const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 
 /**
- * -------------- form validation ----------------
+ * -------------- folder name validation ----------------
+ *
  */
 const MAX_FOLDERNAME_LENGTH = 50;
-/**
- * -------------- folder name validation ----------------
- */
 const folderValidation = [
   body("folderName")
     .trim()
@@ -236,19 +223,24 @@ const folderController = {
     middlewareChain.postFile,
     async (req, res, next) => {
       // upload the file to cloudinary storage
-      const filePath = `tmp/${req.file.filename}`;
-      cloudinary.uploader
-        .upload(filePath, {
-          folder: `dev-storage/${req.user.id}/${req.params.folderId}`,
-          resource_type: "auto",
-        })
-        .then(async (result) => {
-          console.log(result);
-          // insert a file record in the database
+      const folderPath =
+        environment === "production"
+          ? `mustafa-drive/${req.user.id}/${req.params.folderId}`
+          : `dev-storage/${req.user.id}/${req.params.folderId}`;
+
+      let cld_upload_stream = cloudinary.uploader.upload_stream(
+        { folder: folderPath },
+        async (cloudError, result) => {
+          console.log(cloudError, result);
+
+          if (cloudError) {
+            throw new Error(cloudError);
+          }
+
           try {
             await prisma.file.create({
               data: {
-                name: req.file.filename,
+                name: result.display_name + "." + result.format,
                 originalname: req.file.originalname,
                 size: req.file.size,
                 assetId: result.asset_id,
@@ -257,21 +249,15 @@ const folderController = {
               },
             });
 
-            // delete the file in tmp
-            fs.unlink(`tmp/${req.file.filename}`, (err) => {
-              console.log(err);
-            });
-
             // redirect user back to original folder
             res.redirect(`/folder/${req.params.folderId}`);
-          } catch (err) {
-            throw new Error(err);
+          } catch (dbError) {
+            throw new Error(dbError);
           }
-        })
-        .catch((clouderr) => {
-          console.log({ clouderr });
-          next(clouderr);
-        });
+        },
+      );
+      // create a readable stream using the file buffer to pipe to cloudinary upload stream
+      streamifier.createReadStream(req.file.buffer).pipe(cld_upload_stream);
     },
   ],
 };

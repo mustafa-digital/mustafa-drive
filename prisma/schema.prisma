@@ -1,4 +1,4 @@
-// Prisma Schema file
+// Prisma Schema fild
 
 generator client {
   provider = "prisma-client-js"

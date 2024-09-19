@@ -4,7 +4,7 @@
 const prisma = require("../config/client");
 const cloudinary = require("cloudinary").v2;
 const fs = require("fs");
-const { Readable } = require("stream");
+const { Readable, Writable } = require("stream");
 const { finished } = require("stream/promises");
 
 /**
@@ -69,24 +69,17 @@ const fileController = {
       cloudinary.api
         .resources_by_asset_ids([res.locals.file.assetId])
         .then(async (result) => {
+          // get the asset's url
           const resourceURL = result.resources[0].secure_url;
 
-          const stream = fs.createWriteStream(
-            `tmp/${res.locals.file.originalname}`,
-          );
+          // send the file as an attachment
+          res.attachment(res.locals.file.originalname);
+          // fetch the file contents and pipe it into res
           const { body } = await fetch(resourceURL);
-          await finished(Readable.fromWeb(body).pipe(stream));
-
-          res.download(`tmp/${res.locals.file.originalname}`, (err) => {
-            if (err) {
-              throw new Error(err);
-            } else {
-              console.log(`downloaded file ${res.locals.file.originalname}`);
-              fs.unlink(`tmp/${res.locals.file.originalname}`, (err) => {
-                console.log(err);
-              });
-            }
-          });
+          await finished(Readable.fromWeb(body).pipe(res));
+        })
+        .catch((cloudError) => {
+          throw new Error(cloudError);
         });
     },
   ],

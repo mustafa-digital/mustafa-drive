@@ -3,8 +3,7 @@
  */
 const prisma = require("../config/client");
 const cloudinary = require("cloudinary").v2;
-const fs = require("fs");
-const { Readable, Writable } = require("stream");
+const { Readable } = require("stream");
 const { finished } = require("stream/promises");
 
 /**
@@ -25,7 +24,6 @@ const getFileDetails = async (req, res, next) => {
     if (!file) {
       throw new Error("No file found.");
     }
-    console.log({ file });
 
     res.locals.file = file;
     next();

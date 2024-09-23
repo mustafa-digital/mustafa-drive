@@ -3,6 +3,8 @@ name: Prisma Migrate
 on:
   push:
     branches: [main]
+    paths:
+      - "./prisma/**/*.*"
 
 jobs:
   install:
